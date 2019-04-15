@@ -35,15 +35,18 @@ def cvpr2018_gen_s2s(gen, batch_size=1):
 
 def miccai2018_gen(gen, batch_size=1, bidir=False):
     """ generator used for miccai 2018 model """
-    atlas_vol_bs = next(gen)[1]
-    volshape = atlas_vol_bs.shape[1:-1]
-    zeros = np.zeros((batch_size, *volshape, len(volshape)))
+#    atlas_vol_bs = next(gen)[1]
+#    volshape = atlas_vol_bs.shape[1:-1]
+#    zeros = np.zeros((batch_size, *volshape, len(volshape)))
     while True:
+        Y = next(gen)[1]
+        volshape = Y.shape[1:-1]
+        zeros = np.zeros((batch_size, *volshape, len(volshape)))
         X = next(gen)[0]
         if bidir:
-            yield ([X, atlas_vol_bs], [atlas_vol_bs, X, zeros])
+            yield ([X, Y], [Y, X, zeros])
         else:
-            yield ([X, atlas_vol_bs], [atlas_vol_bs, zeros])
+            yield ([X, Y], [Y, zeros])
 
 
 def miccai2018_gen_s2s(gen, batch_size=1, bidir=False):
