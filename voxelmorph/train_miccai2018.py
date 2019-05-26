@@ -9,7 +9,7 @@ import glob
 import sys
 import random
 from argparse import ArgumentParser
-import nibabel as nib  
+
 # third-party imports
 import tensorflow as tf
 import numpy as np
@@ -29,7 +29,6 @@ import neuron.callbacks as nrn_gen
 
 def train(data_dir,
           atlas_file,
-          atlas_dir,
           model_dir,
           gpu_id,
           lr,
@@ -59,18 +58,18 @@ def train(data_dir,
     
     # load atlas from provided files. The atlas we used is 160x192x224.
     # atlas_vol = np.load(atlas_file)['vol'][np.newaxis, ..., np.newaxis]
-    vol_size = (160,192,224)
+    # vol_size = atlas_vol.shape[1:-1]
+    vol_size = (160, 192, 224)
+
     # prepare data files
     # for the CVPR and MICCAI papers, we have data arranged in train/validate/test folders
     # inside each folder is a /vols/ and a /asegs/ folder with the volumes
     # and segmentations. All of our papers use npz formated data.
-    train_vol_names = sorted(glob.glob(os.path.join(data_dir, '*.nii')))    
+    train_vol_names = glob.glob(os.path.join(data_dir, '*.nii'))
+    random.shuffle(train_vol_names)  # shuffle volume list
+    print(data_dir,train_vol_names)
     assert len(train_vol_names) > 0, "Could not find any training data"
-    print(train_vol_names)
-    atlas_vol_names = sorted(glob.glob(os.path.join(atlas_dir, '*.nii')))
-    print(atlas_vol_names)
-    assert len(atlas_vol_names) > 0, "Could not find any atlas data"
-    
+
     # Diffeomorphic network architecture used in MICCAI 2018 paper
     nf_enc = [16,32,32,32]
     nf_dec = [32,32,32,32,16,3]
@@ -118,9 +117,9 @@ def train(data_dir,
         'batch_size should be a multiple of the nr. of gpus. ' + \
         'Got batch_size %d, %d gpus' % (batch_size, nb_gpus)
 
-    train_example_gen = datagenerators.example_gen(train_vol_names,atlas_vol_names, batch_size=batch_size)
+    train_example_gen = datagenerators.example_gen(train_vol_names, batch_size=batch_size)
     # atlas_vol_bs = np.repeat(atlas_vol, batch_size, axis=0)
-    miccai2018_gen = datagenerators.miccai2018_gen(train_example_gen,
+    miccai2018_gen = datagenerators.miccai2018_gen_s2s(train_example_gen,
                                                    batch_size=batch_size,
                                                    bidir=bidir)
 
@@ -154,10 +153,6 @@ if __name__ == "__main__":
 
     parser.add_argument("data_dir", type=str,
                         help="data folder")
-
-    parser.add_argument("--atlas_dir", type=str,
-                        dest="atlas_dir", default='../',
-                        help="atlas folder")
 
     parser.add_argument("--atlas_file", type=str,
                         dest="atlas_file", default='../data/atlas_norm.npz',
