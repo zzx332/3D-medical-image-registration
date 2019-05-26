@@ -7,4 +7,6 @@ Convert nii to npz
 register image of pig liver with voxelmorph(image to image)
 ## stn
 cnn + stn to classificate mnist
-
+## ezdice
+parameters:
+0 D:\users\zzx\voxelmorph-master\models\ 387
