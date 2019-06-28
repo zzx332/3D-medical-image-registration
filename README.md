@@ -13,3 +13,9 @@ parameters:
 ## mask
 parameters:
 --image_dir D:\users\zzx\data\2017\aft\ --mask_dir D:\users\zzx\data\2017mask\aft --save_dir D:\users\zzx\data\2017\aft\
+## crop
+normalize .mgz to 0-1 and crop to (160,192,224)
+## affine
+batch run freesurfer autorecon1
+##
+batch run freesurfer talairach
