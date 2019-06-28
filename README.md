@@ -17,5 +17,5 @@ parameters:
 normalize .mgz to 0-1 and crop to (160,192,224)
 ## affine
 batch run freesurfer autorecon1
-##
-batch run freesurfer talairach
+## talairch
+batch run freesurfer mri_convert --apply_transform talairach.xfm
