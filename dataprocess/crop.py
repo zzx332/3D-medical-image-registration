@@ -1,15 +1,13 @@
-import numpy as np
-import cv2
+# crop and normalization
+
 import glob
-import os
+import numpy as np
+import nibabel as nib
 
-
-#im = cv2.imread('/media/sdg/zzx/data/plot_samples/0/LIDC-IDRI-0266_1.3.6.1.4.1.14519.5.2.1.6279.6001.341557859428950960906150406596_179_low_fake_B.png')
-images = sorted(glob.glob(os.path.join('/media/sdg/zzx/data/ct/image', '*.png')))
-for index in range(len(images)):
-    img = cv2.imread(images[index])
-    img = cv2.resize(img, (512,512,3), interpolation = cv2.INTER_CUBIC)
-    img = img[260:380,110:230,:]
-    cv2.imwrite(images[index], img)
-
-
+images = sorted(glob.glob('../brain*'))
+for image in images:
+    vol = nib.load(image).get_data()
+    vol = vol/255
+    vol = vol[48:-48,31:-33,3:-29]
+    newvol = nib.Nifti1Image(vol,affine=None)
+    nib.save(newvol, './train_vol'+image.split('n')[-1].split('.')[0]+'.mgz')
