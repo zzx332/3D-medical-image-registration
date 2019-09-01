@@ -19,3 +19,5 @@ normalize .mgz to 0-1 and crop to (160,192,224)
 batch run freesurfer autorecon1
 ## talairch
 batch run freesurfer mri_convert --apply_transform talairach.xfm
+## ss.sh
+linux download file from google drive
